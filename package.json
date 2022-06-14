@@ -17,7 +17,7 @@
   "scripts": {
     "example": "node example/app | pino-pretty"
   },
-  "name": "dexpress",
+  "name": "@deranged/dexpress",
   "description": "Batteries-included express setup\r ================================",
   "version": "0.1.0",
   "main": "index.js",
