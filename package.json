@@ -1,0 +1,46 @@
+{
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dexpress-finalhandler": "^0.1.0",
+    "express": "^4.18.1",
+    "express-prometheus-middleware": "^1.2.0",
+    "helmet": "^5.1.0",
+    "pino-http": "^7.1.0",
+    "serialize-every-error": "^0.1.1",
+    "uuid": "^8.3.2"
+  },
+  "type": "module",
+  "devDependencies": {
+    "nodemon": "^2.0.16",
+    "pino-pretty": "^8.0.0"
+  },
+  "scripts": {
+    "example": "node example/app | pino-pretty"
+  },
+  "name": "dexpress",
+  "description": "Batteries-included express setup\r ================================",
+  "version": "0.1.0",
+  "main": "index.js",
+  "directories": {
+    "example": "example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derangeddk/dexpress.git"
+  },
+  "keywords": [
+    "express",
+    "webserver",
+    "opinionated",
+    "batteries",
+    "included",
+    "easy",
+    "simple"
+  ],
+  "author": "Niels Abildgaard <niels@deranged.dk>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/derangeddk/dexpress/issues"
+  },
+  "homepage": "https://github.com/derangeddk/dexpress#readme"
+}
