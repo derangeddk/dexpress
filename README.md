@@ -4,7 +4,7 @@ Batteries-included express setup
 Use it like you use express, but with less boilerplate required for all the things you probably want for building APIs that leave you wrangling your setup less.
 
 ```js
-import express from 'dexpress';
+import express from 'dexpress-main';
 
 // TODO: await is required for now, willfix
 const app = await express();
