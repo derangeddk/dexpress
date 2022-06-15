@@ -65,7 +65,7 @@ export default async (app) => {
     const originalHandle = app.handle.bind(app);
     app.handle = (req, res, callback) => {
         originalHandle(req, res, callback || finalhandler(req, res, {
-            onerror: (err) => req.log.error({ err }, 'An error occurred'),
+            onservererror: (err) => req.log.error({ err }, 'An error occurred'),
             errortransform: (err) => {
                 if(err.issues && err.name === 'ZodError') {
                     return createHttpError(400, 'Invalid request', { issues: err.issues });
