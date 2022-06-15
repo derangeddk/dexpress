@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "cors": "^2.8.5",
-    "dexpress-finalhandler": "^0.1.1",
+    "dexpress-finalhandler": "^0.1.2",
     "express": "^4.18.1",
     "express-prometheus-middleware": "^1.2.0",
     "helmet": "^5.1.0",
