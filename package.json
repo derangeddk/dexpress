@@ -1,10 +1,11 @@
 {
   "dependencies": {
     "cors": "^2.8.5",
-    "dexpress-finalhandler": "^0.1.0",
+    "dexpress-finalhandler": "^0.1.1",
     "express": "^4.18.1",
     "express-prometheus-middleware": "^1.2.0",
     "helmet": "^5.1.0",
+    "http-errors": "^2.0.0",
     "pino-http": "^7.1.0",
     "serialize-every-error": "^0.1.1",
     "uuid": "^8.3.2"
@@ -12,7 +13,8 @@
   "type": "module",
   "devDependencies": {
     "nodemon": "^2.0.16",
-    "pino-pretty": "^8.0.0"
+    "pino-pretty": "^8.0.0",
+    "zod": "^3.17.3"
   },
   "scripts": {
     "example": "node example/app | pino-pretty"
