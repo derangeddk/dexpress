@@ -12,4 +12,9 @@ async function proxy() {
 
 Object.entries(express).forEach(([ key, value ]) => proxy[key] = value);
 
+proxy.deprecated = (req, res, next) => {
+    req.log.warn('Deprecated endpoint hit');
+    next();
+}
+
 export default proxy;

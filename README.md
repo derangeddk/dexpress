@@ -13,6 +13,8 @@ const app = await express();
 Features:
 - Built in logging with request IDs via [pino](https://npmjs.com/package/pino)
 - Extensive error serialization via [serialize-every-error](https://npmjs.com/package/serialize-every-error)
+- `express.deprecated` middleware logs a warning if an endpoint is accessed, so you can use metrics to
+  determine how often deprecated endpoints are hit.
 
 Usage
 -----
