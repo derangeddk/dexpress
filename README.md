@@ -26,7 +26,6 @@ Ideas:
 
 - make it conform to [smacker](https://npmjs.com/package/smacker) in some way? Is that good with the setup we do?
 - polyfill async handler for everything until it is native?
-- express as peer dep
 - versioning support (ooh interesting)
 - zod validation errors -> http error 400 in final handler -- maybe also support other validator errors?
 
