@@ -5,6 +5,7 @@ import finalhandler from 'dexpress-finalhandler';
 import helmet from 'helmet';
 import cors from 'cors';
 import prometheus from 'express-prometheus-middleware';
+import createHttpError from 'http-errors';
 
 //TODO: better way to handle asynchrony here?
 
@@ -65,7 +66,12 @@ export default async (app) => {
     app.handle = (req, res, callback) => {
         originalHandle(req, res, callback || finalhandler(req, res, {
             onerror: (err) => req.log.error({ err }, 'An error occurred'),
-            errortransform: (err) => err, //TODO: handle Zod errors -> http errors with 400 and props set with relevant info
+            errortransform: (err) => {
+                if(err.issues && err.name === 'ZodError') {
+                    return createHttpError(400, 'Invalid request', { issues: err.issues });
+                }
+                return err;
+            },
         }));
     }
 };
