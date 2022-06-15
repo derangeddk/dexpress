@@ -24,4 +24,14 @@ app.post('/validation', express.json(), (req, res) => {
     res.send(body);
 });
 
+app.get('/async', async (req, res) => {
+    await thisMethodErrors();
+    res.send("somehow returned without failing?? bad");
+});
+
+async function thisMethodErrors() {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    throw new Error("Task failed succesfully!");
+}
+
 app.listen(5212);
