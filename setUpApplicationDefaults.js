@@ -6,6 +6,8 @@ import helmet from 'helmet';
 import cors from 'cors';
 import prometheus from 'express-prometheus-middleware';
 import createHttpError from 'http-errors';
+import methods from 'methods';
+import asyncHandler from 'express-async-handler';
 
 //TODO: better way to handle asynchrony here?
 
@@ -60,6 +62,40 @@ export default async (app) => {
     app.use(helmet());
     app.use(cors());
     app.use(prometheus());
+
+    // Polyfill async handling in endpoints until support hits express
+    [ ...methods, 'all' ].forEach((method) => {
+        const originalMethod = app[method];
+        app[method] = function(path) {
+            // Wrap middleware or arrays of middlewares in aysnchandler
+            const middlewares = Array.prototype.slice.call(arguments, 1)
+                .map((middleware) => {
+                    if(Array.isArray(middleware)) {
+                        return middleware.map(asyncHandler);
+                    }
+                    return asyncHandler(middleware);
+                });
+
+            originalMethod.apply(app, [ path, ...middlewares ]);
+        };
+    });
+
+    const originalUse = app.use;
+    app.use = function() {
+        // Wrap middlewares in async handler if they are functions or arrays
+        const middlewares = Array.prototype.slice.call(arguments, 1)
+            .map((middleware) => {
+                if(Array.isArray(middleware)) {
+                    return middleware.map(asyncHandler);
+                }
+                if(typeof middleware === 'function') {
+                    return asyncHandler(middleware);
+                }
+                return middleware;
+            });
+
+        return originalUse.apply(app, middlewares);
+    };
 
     // Attach configurable finalhandler
     const originalHandle = app.handle.bind(app);
