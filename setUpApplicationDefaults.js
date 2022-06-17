@@ -8,6 +8,7 @@ import prometheus from 'express-prometheus-middleware';
 import createHttpError from 'http-errors';
 import methods from 'methods';
 import asyncHandler from 'express-async-handler';
+import express from 'express';
 
 //TODO: better way to handle asynchrony here?
 
@@ -63,7 +64,19 @@ export default async (app, config) => {
     // Attach always useful middleware
     app.use(helmet());
     app.use(cors());
-    app.use(prometheus());
+
+    // Add prometheus monitoring metrics
+    if (config.prometheusMetrics) {
+        const metricsConfig = { ...config.prometheusMetrics };
+        if (config.prometheusMetrics.port) {
+            app.metricsApp = express();
+            app.metricsApp.listen(metricsConfig.port);
+            metricsConfig.metricsApp = app.metricsApp;
+            delete metricsConfig.port;
+        }
+        app.use(prometheus(metricsConfig));
+    }
+    // TODO we need to terminate app.metricsApp too somehow on shutdown
 
     // Polyfill async handling in endpoints until support hits express
     [ ...methods, 'all' ].forEach((method) => {
