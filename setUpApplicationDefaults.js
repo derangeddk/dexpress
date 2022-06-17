@@ -36,7 +36,6 @@ export default async (app, config) => {
     app.use((req, res, next) => {
         req.log.info({ req }, 'New request');
 
-
         // An alternative to pino-http autoLogger on the following lines
         // autologger creates new Errors for http 500, which is super bad behavior
         // instead we would probably like to report errors as errors and everything
