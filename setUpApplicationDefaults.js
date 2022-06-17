@@ -11,7 +11,7 @@ import asyncHandler from 'express-async-handler';
 
 //TODO: better way to handle asynchrony here?
 
-export default async (app) => {
+export default async (app, config) => {
     app.use(pino({
         autoLogging: false,
         serializers: {
