@@ -19,7 +19,7 @@
     "zod": "^3.17.3"
   },
   "scripts": {
-    "example": "node example/app | pino-pretty"
+    "example": "nodemon example/app.js | pino-pretty"
   },
   "name": "dexpress-main",
   "description": "Batteries-included express setup\r ================================",
