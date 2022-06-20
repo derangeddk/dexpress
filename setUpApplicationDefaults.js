@@ -4,11 +4,11 @@ import createErrorSerializer from 'serialize-every-error';
 import finalhandler from 'dexpress-finalhandler';
 import helmet from 'helmet';
 import cors from 'cors';
-import prometheus from 'express-prometheus-middleware';
 import createHttpError from 'http-errors';
 import methods from 'methods';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
+import promBundle from 'express-prom-bundle';
 
 //TODO: better way to handle asynchrony here?
 
@@ -74,7 +74,13 @@ export default async (app, config) => {
             metricsConfig.metricsApp = app.metricsApp;
             delete metricsConfig.port;
         }
-        app.use(prometheus(metricsConfig));
+        app.use(promBundle({
+          metricsApp: app.metricsApp,
+          autoregister: false,
+          includeMethod: true,
+          includePath: true,
+          promClient: { collectDefaultMetrics: { } }
+        }));
     }
     // TODO we need to terminate app.metricsApp too somehow on shutdown
 
