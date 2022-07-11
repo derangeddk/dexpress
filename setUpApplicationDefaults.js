@@ -76,7 +76,7 @@ export default async (app, config) => {
         }
         app.use(promBundle({
           metricsApp: app.metricsApp,
-          autoregister: false,
+          autoregister: !Boolean(config.prometheusMetrics.port),  // if no port defined, we register on primary express app
           includeMethod: true,
           includePath: true,
           promClient: { collectDefaultMetrics: { } }
