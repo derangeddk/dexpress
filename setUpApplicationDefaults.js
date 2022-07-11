@@ -9,6 +9,7 @@ import methods from 'methods';
 import asyncHandler from 'express-async-handler';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
+import { promisify } from 'util';
 
 //TODO: better way to handle asynchrony here?
 
@@ -70,12 +71,9 @@ export default async (app, config) => {
         const metricsConfig = { ...config.prometheusMetrics };
         if (config.prometheusMetrics.port) {
             app.metricsApp = express();
-            app.metricsApp.listen(metricsConfig.port);
-            metricsConfig.metricsApp = app.metricsApp;
-            delete metricsConfig.port;
         }
         app.use(promBundle({
-          metricsApp: app.metricsApp,
+          metricsApp: app.metricsApp, // its fine to pass an undefined here, if we don't want an alternative app for metrics
           autoregister: !Boolean(config.prometheusMetrics.port),  // if no port defined, we register on primary express app
           includeMethod: true,
           includePath: true,
@@ -133,5 +131,15 @@ export default async (app, config) => {
                 return err;
             },
         }));
+    }
+
+    // patch listen to also start metrics app if it exists
+    const originalListen = app.listen.bind(app);
+    app.listen = (port, callback) => {
+        if (!callback) callback = () => {};
+        originalListen(port, () => {
+          if (app.metricsApp) return app.metricsApp.listen(config.prometheusMetrics.port, callback);
+          callback();
+        });
     }
 };
