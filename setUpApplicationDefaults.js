@@ -77,7 +77,10 @@ export default async (app, config) => {
           autoregister: !Boolean(config.prometheusMetrics.port),  // if no port defined, we register on primary express app
           includeMethod: true,
           includePath: true,
-          promClient: { collectDefaultMetrics: { } }
+          promClient: {
+            collectDefaultMetrics: { }, 
+            ...config.prometheusMetrics.promClient, // see https://github.com/siimon/prom-client for config options
+          },
         }));
     }
     // TODO we need to terminate app.metricsApp too somehow on shutdown
