@@ -4,14 +4,16 @@ import createErrorSerializer from 'serialize-every-error';
 import finalhandler from 'dexpress-finalhandler';
 import helmet from 'helmet';
 import cors from 'cors';
-import prometheus from 'express-prometheus-middleware';
 import createHttpError from 'http-errors';
 import methods from 'methods';
 import asyncHandler from 'express-async-handler';
+import express from 'express';
+import promBundle from 'express-prom-bundle';
+import { promisify } from 'util';
 
 //TODO: better way to handle asynchrony here?
 
-export default async (app) => {
+export default async (app, config) => {
     app.use(pino({
         autoLogging: false,
         serializers: {
@@ -32,7 +34,6 @@ export default async (app) => {
 
     app.use((req, res, next) => {
         req.log.info({ req }, 'New request');
-
 
         // An alternative to pino-http autoLogger on the following lines
         // autologger creates new Errors for http 500, which is super bad behavior
@@ -61,7 +62,25 @@ export default async (app) => {
     // Attach always useful middleware
     app.use(helmet());
     app.use(cors());
-    app.use(prometheus());
+
+    // Add prometheus monitoring metrics
+    if (config.prometheusMetrics) {
+        const metricsConfig = { ...config.prometheusMetrics };
+        if (config.prometheusMetrics.port) {
+            app.metricsApp = express();
+        }
+        app.use(promBundle({
+          metricsApp: app.metricsApp, // its fine to pass an undefined here, if we don't want an alternative app for metrics
+          autoregister: !Boolean(config.prometheusMetrics.port),  // if no port defined, we register on primary express app
+          includeMethod: true,
+          includePath: true,
+          promClient: {
+            collectDefaultMetrics: { }, 
+            ...config.prometheusMetrics.promClient, // see https://github.com/siimon/prom-client for config options
+          },
+        }));
+    }
+    // TODO we need to terminate app.metricsApp too somehow on shutdown
 
     // Polyfill async handling in endpoints until support hits express
     [ ...methods, 'all' ].forEach((method) => {
@@ -109,5 +128,15 @@ export default async (app) => {
                 return err;
             },
         }));
+    }
+
+    // patch listen to also start metrics app if it exists
+    const originalListen = app.listen.bind(app);
+    app.listen = (port, callback) => {
+        if (!callback) callback = () => {};
+        originalListen(port, () => {
+          if (app.metricsApp) return app.metricsApp.listen(config.prometheusMetrics.port, callback);
+          callback();
+        });
     }
 };
