@@ -9,7 +9,7 @@
     "http-errors": "^2.0.0",
     "methods": "^1.1.2",
     "pino-http": "^7.1.0",
-    "serialize-every-error": "^0.1.2",
+    "serialize-every-error": "^0.1.5",
     "uuid": "^8.3.2"
   },
   "type": "module",
