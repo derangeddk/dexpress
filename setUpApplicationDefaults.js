@@ -17,9 +17,12 @@ export default async (app) => {
         serializers: {
             ...stdSerializers,
             req: (req) => {
-                const serialized = stdSerializers.req(req);
+                const serialized = { ...stdSerializers.req(req) };
                 if(serialized?.headers?.authorization) {
-                    serialized.headers.authorization = '####REDACTED####';
+                    serialized.headers = {
+                        ...serialized.headers,
+                        authorization: '####REDACTED####',
+                    };
                 }
                 return serialized;
             },
