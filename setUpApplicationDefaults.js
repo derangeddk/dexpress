@@ -83,7 +83,7 @@ export default async (app) => {
     const originalUse = app.use;
     app.use = function() {
         // Wrap middlewares in async handler if they are functions or arrays
-        const middlewares = Array.prototype.slice.call(arguments, 1)
+        const middlewares = Array.prototype.slice.call(arguments)
             .map((middleware) => {
                 if(Array.isArray(middleware)) {
                     return middleware.map(asyncHandler);
