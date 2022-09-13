@@ -34,4 +34,9 @@ async function thisMethodErrors() {
     throw new Error("Task failed succesfully!");
 }
 
-app.listen(5212);
+const server = app.listen(5212, () => console.log("Server listening on localhost:5212"));
+
+const close = () => server.close(() => console.log("Server closed -- exiting now"));
+
+process.on('SIGINT', close);
+process.on('SIGTERM', close);
