@@ -10,10 +10,14 @@ import asyncHandler from 'express-async-handler';
 import express from 'express';
 import promBundle from 'express-prom-bundle';
 import { promisify } from 'util';
+import httpGracefulShutdown from 'http-graceful-shutdown';
 
 //TODO: better way to handle asynchrony here?
 
 export default async (app, config) => {
+    let server;
+    let metricsServer;
+
     app.use(pino({
         autoLogging: false,
         serializers: {
@@ -78,7 +82,7 @@ export default async (app, config) => {
           includeMethod: true,
           includePath: true,
           promClient: {
-            collectDefaultMetrics: { }, 
+            collectDefaultMetrics: { },
             ...config.prometheusMetrics.promClient, // see https://github.com/siimon/prom-client for config options
           },
         }));
@@ -140,9 +144,26 @@ export default async (app, config) => {
     const originalListen = app.listen.bind(app);
     app.listen = (port, callback) => {
         if (!callback) callback = () => {};
-        originalListen(port, () => {
-          if (app.metricsApp) return app.metricsApp.listen(config.prometheusMetrics.port, callback);
-          callback();
+        const server = originalListen(port, () => {
+            if (app.metricsApp) {
+                metricsServer = app.metricsApp.listen(config.prometheusMetrics.port, callback);
+                return;
+            }
+            callback();
         });
+
+        const closeOriginal = server.close;
+        server.close = async (callback) => {
+            server.close = closeOriginal;
+
+            const options = { forceExit: false, signals: '' };
+            if (metricsServer) await httpGracefulShutdown(metricsServer, options)();
+            await httpGracefulShutdown(server, options)();
+
+            if (callback) callback();
+            return;
+        };
+
+        return server;
     }
 };
