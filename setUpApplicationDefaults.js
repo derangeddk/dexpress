@@ -153,10 +153,10 @@ export default async (app, config) => {
 
         const closeOriginal = server.close;
         server.close = async (callback) => {
-            server.close = closeOriginal;
-
             const options = { forceExit: false, signals: '' };
             if (metricsServer) await httpGracefulShutdown(metricsServer, options)();
+
+            server.close = closeOriginal;
             await httpGracefulShutdown(server, options)();
 
             if (callback) callback();
