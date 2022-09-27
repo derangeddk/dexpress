@@ -87,7 +87,6 @@ export default async (app, config) => {
           },
         }));
     }
-    // TODO we need to terminate app.metricsApp too somehow on shutdown
 
     // Polyfill async handling in endpoints until support hits express
     [ ...methods, 'all' ].forEach((method) => {
