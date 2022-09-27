@@ -70,20 +70,21 @@ export default async (app, config) => {
     app.use(helmet());
     app.use(cors());
 
+    const prometheusMetricsConfig = { enabled: true, ...config.prometheusMetrics };
+
     // Add prometheus monitoring metrics
-    if (config.prometheusMetrics) {
-        const metricsConfig = { ...config.prometheusMetrics };
-        if (config.prometheusMetrics.port) {
+    if (prometheusMetricsConfig.enabled) {
+        if (prometheusMetricsConfig.port) {
             app.metricsApp = express();
         }
         app.use(promBundle({
           metricsApp: app.metricsApp, // its fine to pass an undefined here, if we don't want an alternative app for metrics
-          autoregister: !Boolean(config.prometheusMetrics.port),  // if no port defined, we register on primary express app
+          autoregister: !Boolean(prometheusMetricsConfig.port),  // if no port defined, we register on primary express app
           includeMethod: true,
           includePath: true,
           promClient: {
             collectDefaultMetrics: { },
-            ...config.prometheusMetrics.promClient, // see https://github.com/siimon/prom-client for config options
+            ...prometheusMetricsConfig.promClient, // see https://github.com/siimon/prom-client for config options
           },
         }));
     }
@@ -145,7 +146,7 @@ export default async (app, config) => {
         if (!callback) callback = () => {};
         const server = originalListen(port, () => {
             if (app.metricsApp) {
-                metricsServer = app.metricsApp.listen(config.prometheusMetrics.port, callback);
+                metricsServer = app.metricsApp.listen(prometheusMetricsConfig.port, callback);
                 return;
             }
             callback();
