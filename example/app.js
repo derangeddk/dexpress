@@ -40,3 +40,5 @@ const close = () => server.close(() => console.log("Server closed -- exiting now
 
 process.on('SIGINT', close);
 process.on('SIGTERM', close);
+
+app.logger.info("Logging something outside of a HTTP request");
