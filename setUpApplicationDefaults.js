@@ -1,4 +1,5 @@
-import pino, { stdSerializers } from 'pino-http';
+import pino from 'pino';
+import pinoHttp, { stdSerializers } from 'pino-http';
 import { v4 as uuidV4 } from 'uuid';
 import createErrorSerializer from 'serialize-every-error';
 import finalhandler from 'dexpress-finalhandler';
@@ -14,11 +15,19 @@ import httpGracefulShutdown from 'http-graceful-shutdown';
 
 //TODO: better way to handle asynchrony here?
 
-export default async (app, config) => {
+export default async (app, config, existingLogger) => {
     let server;
     let metricsServer;
 
-    app.use(pino({
+    if (existingLogger) {
+      // we should probably check if this is a pino logger, not sure we support other types of loggers
+    }
+
+    const logger = existingLogger || pino();
+    app.logger = logger;
+
+    const loggerMiddleware = pinoHttp({
+        logger,
         autoLogging: false,
         serializers: {
             ...stdSerializers,
@@ -37,7 +46,9 @@ export default async (app, config) => {
         },
         genReqId: uuidV4,
         wrapSerializers: false,
-    }));
+    });
+
+    app.use(loggerMiddleware);
 
     app.use((req, res, next) => {
         req.log.info({ req }, 'New request');
