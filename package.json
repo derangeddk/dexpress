@@ -10,7 +10,7 @@
     "http-graceful-shutdown": "^3.1.8",
     "methods": "^1.1.2",
     "pino-http": "^7.1.0",
-    "serialize-every-error": "^0.1.2",
+    "serialize-every-error": "^0.1.6",
     "uuid": "^8.3.2"
   },
   "type": "module",
