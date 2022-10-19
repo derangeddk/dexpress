@@ -24,7 +24,7 @@
   },
   "name": "dexpress-main",
   "description": "Batteries-included express setup\r ================================",
-  "version": "0.2.5",
+  "version": "0.2.6",
   "main": "index.js",
   "directories": {
     "example": "example"
