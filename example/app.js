@@ -1,7 +1,10 @@
 import express from '../index.js';
 import z from 'zod';
+import pino from 'pino';
 
-const app = await express({ prometheusMetrics: { port: 5213 } });
+const logger = pino().child({ scope: 'outside' });
+
+const app = await express({ prometheusMetrics: { port: 5213 } }, logger);
 
 app.get('/', (req, res) => {
     req.log.info({ hello: 123 }, "Universal request received");

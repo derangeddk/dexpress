@@ -1,12 +1,12 @@
 import express from 'express';
 import setUpApplicationDefaults from './setUpApplicationDefaults.js';
 
-async function proxy(config = { }) {
+async function proxy(config = { }, logger) {
     const app = express.apply(express);
 
     //TODO: setUpAppDefaults is async, should we await here? Probably, order is significant.
     // hmmmmmmm maybe improve?
-    await setUpApplicationDefaults(app, config);
+    await setUpApplicationDefaults(app, config, logger);
     return app;
 }
 
