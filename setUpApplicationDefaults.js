@@ -51,7 +51,8 @@ export default async (app, config, existingLogger) => {
     app.use(loggerMiddleware);
 
     app.use((req, res, next) => {
-        req.log.info({ req }, 'New request');
+        // here we default to true, unless explicitly turned off
+        if (config.enableRequestLogger !== false) req.log.info({ req }, 'New request');
 
         // An alternative to pino-http autoLogger on the following lines
         // autologger creates new Errors for http 500, which is super bad behavior
@@ -63,7 +64,9 @@ export default async (app, config, existingLogger) => {
             res.removeListener('close', onResponse);
             res.removeListener('finish', onResponse);
             const responseTime = Date.now() - startTime;
-            req.log.info({ res, responseTime }, 'Response sent');
+
+            // here we default to true, unless explicitly turned off
+            if (config.enableRequestLogger !== false) req.log.info({ res, responseTime }, 'Response sent');
         };
         res.on('close', onResponse);
         res.on('finish', onResponse);
