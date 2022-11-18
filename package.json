@@ -9,6 +9,7 @@
     "http-errors": "^2.0.0",
     "http-graceful-shutdown": "^3.1.8",
     "methods": "^1.1.2",
+    "pino": "^8.7.0",
     "pino-http": "^7.1.0",
     "serialize-every-error": "^0.1.6",
     "uuid": "^8.3.2"
