@@ -81,8 +81,8 @@ export default async (app, config, existingLogger) => {
     });
 
     // Attach always useful middleware
-    app.use(helmet());
-    app.use(cors());
+    app.use(helmet(config.helmet));
+    app.use(cors(config.cors));
 
     const prometheusMetricsConfig = { enabled: true, ...config.prometheusMetrics };
 
