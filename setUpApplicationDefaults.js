@@ -107,6 +107,7 @@ export default async (app, config, existingLogger) => {
     [ ...methods, 'all' ].forEach((method) => {
         const originalMethod = app[method];
         app[method] = function(path) {
+            if (arguments.length === 1) return originalMethod.call(app, path);
             // Wrap middleware or arrays of middlewares in aysnchandler
             const middlewares = Array.prototype.slice.call(arguments, 1)
                 .map((middleware) => {
