@@ -43,6 +43,13 @@ export default async (app, config, existingLogger) => {
             },
             // TODO: some non-async version of serializer with everything enabled pls
             err: await createErrorSerializer(),
+            user: config.userSerializer ? config.userSerializer : (user) => {
+                if(user?.id || user?._id) {
+                    return { id: user.id ?? user._id }
+                }
+
+                return {};
+            }
         },
         genReqId: uuidV4,
         wrapSerializers: false,
@@ -66,14 +73,14 @@ export default async (app, config, existingLogger) => {
             const responseTime = Date.now() - startTime;
 
             // here we default to true, unless explicitly turned off
-            if (config.enableRequestLogger !== false) req.log.info({ res, responseTime }, 'Response sent');
+            if (config.enableRequestLogger !== false) req.log.info({ res, responseTime, user: req.user }, 'Response sent');
         };
         res.on('close', onResponse);
         res.on('finish', onResponse);
 
         const onResponseError = (err) => {
             res.removeListener('error', onResponseError);
-            req.log.error({ err, res }, 'Error while sending response');
+            req.log.error({ err, res, user: req.user }, 'Error while sending response');
         }
         res.on('error', onResponseError);
 
