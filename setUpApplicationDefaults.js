@@ -1,6 +1,6 @@
 import pino from 'pino';
 import pinoHttp, { stdSerializers } from 'pino-http';
-import { v4 as uuidV4 } from 'uuid';
+import { randomUUID } from 'crypto';
 import createErrorSerializer from 'serialize-every-error';
 import finalhandler from 'dexpress-finalhandler';
 import helmet from 'helmet';
@@ -51,7 +51,7 @@ export default async (app, config, existingLogger) => {
                 return {};
             }
         },
-        genReqId: uuidV4,
+        genReqId: randomUUID,
         wrapSerializers: false,
     });
 
